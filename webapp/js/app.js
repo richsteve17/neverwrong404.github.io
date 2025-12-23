@@ -5,6 +5,9 @@ let currentCategory = 'all';
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for OAuth callback
+    handleOAuthCallback();
+
     // Check configuration
     if (!isConfigured()) {
         console.warn('App is not configured. Please update config.js with your API keys.');
@@ -16,6 +19,50 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show login screen initially
     showLoginScreen();
 });
+
+// Handle OAuth redirect callback
+function handleOAuthCallback() {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const accessToken = params.get('access_token');
+
+        if (accessToken) {
+            // Store token
+            localStorage.setItem('gmail_access_token', accessToken);
+
+            // Clear hash from URL
+            window.history.replaceState(null, null, window.location.pathname);
+
+            // Initialize GAPI with token
+            if (typeof gapi !== 'undefined' && gapi.client) {
+                gapi.client.setToken({ access_token: accessToken });
+            }
+
+            // Show app screen
+            getUserEmailDirect(accessToken).then(email => {
+                showAppScreen(email);
+                loadEmails();
+            });
+        }
+    }
+}
+
+// Get user email directly from Gmail API
+async function getUserEmailDirect(token) {
+    try {
+        const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/profile', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        return data.emailAddress || 'User';
+    } catch (error) {
+        console.error('Error getting user email:', error);
+        return 'User';
+    }
+}
 
 // Set up all event listeners
 function setupEventListeners() {
@@ -60,8 +107,14 @@ async function loadEmails() {
     emailList.appendChild(loadingIndicator);
 
     try {
+        // Get access token
+        const token = localStorage.getItem('gmail_access_token');
+        if (!token) {
+            throw new Error('No access token found');
+        }
+
         // Fetch emails from Gmail
-        const emails = await fetchEmails(CONFIG.MAX_EMAILS);
+        const emails = await fetchEmailsDirect(token, CONFIG.MAX_EMAILS);
 
         // Update loading message
         const loadingText = loadingIndicator.querySelector('p');
