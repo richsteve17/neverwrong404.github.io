@@ -2,6 +2,12 @@
 
 // Categorize a single email
 async function categorizeEmail(email) {
+    // Check if API key exists
+    if (!CONFIG.GEMINI_API_KEY || CONFIG.GEMINI_API_KEY === '') {
+        console.error('Gemini API key missing');
+        return 'uncategorized';
+    }
+
     const prompt = buildCategorizationPrompt(email);
 
     try {
@@ -25,6 +31,8 @@ async function categorizeEmail(email) {
         );
 
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Gemini API error (${response.status}):`, errorText);
             throw new Error(`Gemini API error: ${response.statusText}`);
         }
 
@@ -32,7 +40,12 @@ async function categorizeEmail(email) {
         const category = parseCategoryResponse(data);
         return category;
     } catch (error) {
-        console.error('Error categorizing email:', error);
+        console.error('Error categorizing email:', email.subject, error);
+        // Show alert only once for first error
+        if (!window.geminiErrorShown) {
+            window.geminiErrorShown = true;
+            alert(`Gemini API Error: ${error.message}\n\nCheck console for details. Your API key may be invalid.`);
+        }
         return 'uncategorized';
     }
 }
