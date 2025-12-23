@@ -7,7 +7,7 @@ const CONFIG = {
 
     // Get this from Google AI Studio
     // https://makersuite.google.com/app/apikey
-    GEMINI_API_KEY: 'AlzaSyDeyZUNYEY4oLOw-KsCtzIRwxZ7JIAjFKU',
+    GEMINI_API_KEY: 'AIzaSyBJaPOtPe_mAFH6e4hymbjxeKAHV39diKM',
 
     // Gmail API settings
     GMAIL_SCOPES: 'https://www.googleapis.com/auth/gmail.readonly',
