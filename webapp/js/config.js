@@ -3,11 +3,11 @@
 const CONFIG = {
     // Get this from Google Cloud Console
     // https://console.cloud.google.com/
-    GOOGLE_CLIENT_ID: '469028529540-dut6tah0v1n0ad21ppta3afhcqun78pf.apps.googleusercontent.com',
+    GOOGLE_CLIENT_ID: localStorage.getItem('GOOGLE_CLIENT_ID') || '469028529540-dut6tah0v1n0ad21ppta3afhcqun78pf.apps.googleusercontent.com',
 
-    // Get this from Google AI Studio
+    // Get this from Google AI Studio - CONFIGURE AT /webapp/setup.html
     // https://makersuite.google.com/app/apikey
-    GEMINI_API_KEY: 'AIzaSyBJaPOtPe_mAFH6e4hymbjxeKAHV39diKM',
+    GEMINI_API_KEY: localStorage.getItem('GEMINI_API_KEY') || '',
 
     // Gmail API settings
     GMAIL_SCOPES: 'https://www.googleapis.com/auth/gmail.readonly',
