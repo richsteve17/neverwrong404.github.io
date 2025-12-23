@@ -32,6 +32,10 @@
 
             <div id="signInButton"></div>
 
+            <button id="manualSignInBtn" onclick="manualSignIn()" style="display: none; margin: 20px auto; padding: 12px 24px; background: #4285f4; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">
+                Sign in with Google
+            </button>
+
             <div class="setup-notice">
                 <p>⚙️ First time setup required</p>
                 <a href="#" onclick="showSetup(); return false;">View Setup Instructions</a>
@@ -166,6 +170,7 @@
     <script src="js/categories.js"></script>
     <script src="js/gmail.js"></script>
     <script src="js/gemini.js"></script>
+    <script src="js/fallback-signin.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
