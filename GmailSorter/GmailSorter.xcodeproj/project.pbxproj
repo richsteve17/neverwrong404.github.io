@@ -1,0 +1,179 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		001 /* GmailSorterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002 /* GmailSorterApp.swift */; };
+		003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004 /* ContentView.swift */; };
+		005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 006 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		002 /* GmailSorterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailSorterApp.swift; sourceTree = "<group>"; };
+		004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		008 /* GmailSorter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GmailSorter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		009 = {
+			isa = PBXGroup;
+			children = (
+				010 /* GmailSorter */,
+				011 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		010 /* GmailSorter */ = {
+			isa = PBXGroup;
+			children = (
+				002 /* GmailSorterApp.swift */,
+				004 /* ContentView.swift */,
+				006 /* Assets.xcassets */,
+				007 /* Info.plist */,
+			);
+			path = GmailSorter;
+			sourceTree = "<group>";
+		};
+		011 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				008 /* GmailSorter.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		012 /* GmailSorter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 013 /* Build configuration list for PBXNativeTarget "GmailSorter" */;
+			buildPhases = (
+				014 /* Sources */,
+				015 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GmailSorter;
+			productName = GmailSorter;
+			productReference = 008 /* GmailSorter.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		016 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = 017 /* Build configuration list for PBXProject "GmailSorter" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 009;
+			productRefGroup = 011 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				012 /* GmailSorter */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		018 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GmailSorter/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gmailsorter.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GmailSorter/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gmailsorter.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		013 /* Build configuration list for PBXNativeTarget "GmailSorter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				018 /* Debug */,
+				019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		017 /* Build configuration list for PBXProject "GmailSorter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				018 /* Debug */,
+				019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 016 /* Project object */;
+}
