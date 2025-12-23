@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Sorter - Setup</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #4285f4; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background: #1967d2; }
+        .info {
+            background: #e8f0fe;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📧 Gmail Sorter Setup</h1>
+        <p>Enter your API keys to configure the app. These will be stored locally in your browser only.</p>
+
+        <div class="info">
+            <strong>🔒 Privacy:</strong> Your keys are stored in your browser's local storage and never sent to any server.
+        </div>
+
+        <label><strong>Google OAuth Client ID:</strong></label>
+        <input type="text" id="clientId" placeholder="123456789-abc...xyz.apps.googleusercontent.com">
+
+        <label><strong>Gemini API Key:</strong></label>
+        <input type="password" id="apiKey" placeholder="AIzaSy...">
+
+        <button onclick="saveConfig()">Save & Launch App</button>
+
+        <div class="info" style="margin-top: 20px;">
+            <strong>How to get API keys:</strong><br>
+            1. <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> - Create OAuth Client ID<br>
+            2. <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a> - Create API Key
+        </div>
+    </div>
+
+    <script>
+        // Check if already configured
+        window.onload = function() {
+            const savedClientId = localStorage.getItem('GOOGLE_CLIENT_ID');
+            const savedApiKey = localStorage.getItem('GEMINI_API_KEY');
+
+            if (savedClientId && savedApiKey) {
+                if (confirm('Configuration found. Launch app now?')) {
+                    window.location.href = '/webapp/app.html';
+                } else {
+                    document.getElementById('clientId').value = savedClientId;
+                }
+            }
+        };
+
+        function saveConfig() {
+            const clientId = document.getElementById('clientId').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+
+            if (!clientId || !apiKey) {
+                alert('Please enter both API keys!');
+                return;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('GOOGLE_CLIENT_ID', clientId);
+            localStorage.setItem('GEMINI_API_KEY', apiKey);
+
+            alert('✅ Configuration saved! Launching app...');
+            window.location.href = '/webapp/app.html';
+        }
+    </script>
+</body>
+</html>
