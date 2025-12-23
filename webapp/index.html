@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Gmail Sorter">
+    <title>Gmail Sorter - AI Email Organization</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Google OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen">
+        <div class="login-container">
+            <div class="logo">📧</div>
+            <h1>Gmail Sorter</h1>
+            <p class="subtitle">Organize your emails intelligently with Gemini AI</p>
+
+            <div id="signInButton"></div>
+
+            <div class="setup-notice">
+                <p>⚙️ First time setup required</p>
+                <a href="#" onclick="showSetup(); return false;">View Setup Instructions</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="appScreen" class="screen hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-top">
+                <div class="user-info">
+                    <h1>Inbox</h1>
+                    <span id="userEmail" class="user-email"></span>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="refreshBtn" title="Refresh">
+                        <span class="icon">🔄</span>
+                    </button>
+                    <button class="icon-btn" id="settingsBtn" title="Settings">
+                        <span class="icon">⚙️</span>
+                    </button>
+                    <button class="icon-btn" id="signOutBtn" title="Sign Out">
+                        <span class="icon">🚪</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div class="category-pills" id="categoryPills">
+                <button class="pill active" data-category="all">
+                    All <span class="count" id="count-all">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Email List -->
+        <main class="email-list" id="emailList">
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Loading and categorizing emails...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Setup Instructions Modal -->
+    <div id="setupModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Setup Instructions</h2>
+                <button class="close-btn" onclick="hideSetup()">×</button>
+            </div>
+            <div class="modal-body">
+                <h3>Quick Setup (5 minutes)</h3>
+
+                <div class="setup-step">
+                    <h4>1. Get Google OAuth Client ID</h4>
+                    <ol>
+                        <li>Go to <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></li>
+                        <li>Create a new project or select existing</li>
+                        <li>Enable the Gmail API</li>
+                        <li>Create OAuth 2.0 Client ID (Web application)</li>
+                        <li>Add authorized JavaScript origin: <code>https://yourusername.github.io</code></li>
+                        <li>Copy your Client ID</li>
+                    </ol>
+                </div>
+
+                <div class="setup-step">
+                    <h4>2. Get Gemini API Key</h4>
+                    <ol>
+                        <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+                        <li>Create a new API key</li>
+                        <li>Copy the API key</li>
+                    </ol>
+                </div>
+
+                <div class="setup-step">
+                    <h4>3. Configure the App</h4>
+                    <ol>
+                        <li>Open <code>js/config.js</code> in the code</li>
+                        <li>Replace <code>YOUR_GOOGLE_CLIENT_ID</code> with your Client ID</li>
+                        <li>Replace <code>YOUR_GEMINI_API_KEY</code> with your API key</li>
+                        <li>Save and reload the page</li>
+                    </ol>
+                </div>
+
+                <div class="setup-step">
+                    <h4>4. Add to Home Screen (iOS)</h4>
+                    <ol>
+                        <li>Tap the Share button in Safari</li>
+                        <li>Scroll down and tap "Add to Home Screen"</li>
+                        <li>Tap "Add"</li>
+                        <li>Open from your home screen!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-btn" onclick="hideSettings()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="maxEmails">Number of emails to fetch:</label>
+                    <select id="maxEmails">
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <h3>Your API Keys</h3>
+                    <p class="setting-info">Current configuration status:</p>
+                    <div id="apiStatus"></div>
+                </div>
+
+                <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/categories.js"></script>
+    <script src="js/gmail.js"></script>
+    <script src="js/gemini.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
