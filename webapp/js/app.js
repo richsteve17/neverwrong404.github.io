@@ -107,8 +107,14 @@ async function loadEmails() {
     emailList.appendChild(loadingIndicator);
 
     try {
+        // Get access token
+        const token = localStorage.getItem('gmail_access_token');
+        if (!token) {
+            throw new Error('No access token found');
+        }
+
         // Fetch emails from Gmail
-        const emails = await fetchEmails(CONFIG.MAX_EMAILS);
+        const emails = await fetchEmailsDirect(token, CONFIG.MAX_EMAILS);
 
         // Update loading message
         const loadingText = loadingIndicator.querySelector('p');
