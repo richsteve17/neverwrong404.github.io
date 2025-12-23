@@ -2,12 +2,11 @@
 
 const CONFIG = {
     // Get this from Google Cloud Console
-    // https://console.cloud.google.com/
-    GOOGLE_CLIENT_ID: localStorage.getItem('GOOGLE_CLIENT_ID') || '469028529540-dut6tah0v1n0ad21ppta3afhcqun78pf.apps.googleusercontent.com',
-
+    // https://console.cloud.google.com
+    GOOGLE_CLIET_ID: localStorage.getItem(469028529540-399r7m34gkt3n05r7ss572jmkpbl5np8.apps.googleusercontent.com)
     // Get this from Google AI Studio - CONFIGURE AT /webapp/setup.html
     // https://makersuite.google.com/app/apikey
-    GEMINI_API_KEY: localStorage.getItem('GEMINI_API_KEY') || '',
+    GEMINI_API_KEY: localStorage.getItem(AIzaSyAybN58q8KVEJ9yrlksgdPS5YX2K2vKNh0)
 
     // Gmail API settings
     GMAIL_SCOPES: 'https://www.googleapis.com/auth/gmail.readonly',
