@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0b0b0f">
+  <title>djay Drum Pad Coach</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">DRUM&nbsp;PAD&nbsp;COACH</div>
+    <select id="songSelect" aria-label="Song"></select>
+    <div class="tools">
+      <button id="modePlay" class="seg active" title="Free play">PAD</button>
+      <button id="modeLearn" class="seg" title="Learn the song">LEARN</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: drum pad -->
+    <section class="pad-wrap">
+      <div class="pad" id="pad"></div>
+      <div class="transport">
+        <button id="playBtn" class="big">▶ PLAY</button>
+        <button id="stopBtn" class="big ghost">■</button>
+        <label class="bpm">
+          BPM <input id="bpm" type="number" min="40" max="240" value="120">
+        </label>
+        <label class="bpm">
+          SPD
+          <select id="speed">
+            <option value="0.5">½×</option>
+            <option value="0.75">¾×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.25">1.25×</option>
+          </select>
+        </label>
+        <label class="toggle"><input type="checkbox" id="metroOn" checked> click</label>
+        <label class="toggle"><input type="checkbox" id="guideOn" checked> guide</label>
+        <label class="toggle"><input type="checkbox" id="countIn"> count-in</label>
+      </div>
+    </section>
+
+    <!-- RIGHT: song info + scrolling tab -->
+    <aside class="info">
+      <div class="songhead">
+        <h1 id="songTitle">—</h1>
+        <div class="sub" id="songArtist">Pick a song to start</div>
+        <div class="kit" id="kitInfo"></div>
+        <details class="customs">
+          <summary>Custom pad slots (for djay)</summary>
+          <ol id="customList"></ol>
+        </details>
+        <div class="notes" id="songNotes"></div>
+      </div>
+      <div class="tablabel">
+        <span>STEP</span><span>BAR</span><span>HIT</span>
+      </div>
+      <ol class="tab" id="tab"></ol>
+    </aside>
+  </main>
+
+  <footer class="footbar">
+    <span>tap pads · hit 1–8 on keyboard · loops continuously</span>
+    <a href="../">home</a>
+  </footer>
+
+  <script src="js/sounds.js"></script>
+  <script src="js/songs.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
