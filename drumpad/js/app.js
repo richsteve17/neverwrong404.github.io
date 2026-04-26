@@ -74,6 +74,15 @@
     $('bpm').value = s.bpm;
     buildTab();
     stop();
+
+    // YouTube: load saved or default video for this song
+    const savedId = localStorage.getItem('drumpad:yt:' + s.id) || s.youtubeId || '';
+    $('ytInput').value = savedId;
+    loadYouTube(savedId, false);
+
+    // SEARCH link
+    const q = encodeURIComponent(`${s.artist} ${s.title} official audio`);
+    $('ytSearch').href = `https://www.youtube.com/results?search_query=${q}`;
   }
 
   // ---------- Tab (vertical scrolling) ----------
@@ -106,7 +115,6 @@
   let stepIdx = 0;
   const SCHEDULE_AHEAD = 0.1; // seconds
   const TICK_MS = 25;
-  const guideGain = 0.7;     // guide track volume vs free play
 
   function stepDuration() {
     const bpm = Math.max(40, Math.min(240, parseInt($('bpm').value, 10) || 120));
@@ -117,18 +125,15 @@
 
   function scheduleAtStep(time, idx) {
     const hits = expanded.rows[idx];
-    // Click track
     if ($('metroOn').checked) {
       const stepsPerBeat = expanded.steps / 4;
       if (idx % stepsPerBeat === 0) {
         Drums.play(idx === 0 ? 'clickAccent' : 'click', time);
       }
     }
-    // Guide track — play the actual drums (and visually cue + flash on schedule)
     if ($('guideOn').checked && hits.length) {
       hits.forEach((h) => Drums.play(PAD_VOICE[h.pad], time));
     }
-    // visual update at the right time
     const ctxNow = Drums.now();
     const delayMs = Math.max(0, (time - ctxNow) * 1000);
     setTimeout(() => visualStep(idx), delayMs);
@@ -136,19 +141,15 @@
 
   function visualStep(idx) {
     if (!isPlaying) return;
-    // mark current row
     tabRows.forEach((r, i) => r.classList.toggle('current', i === idx));
     const cur = tabRows[idx];
     if (cur) {
-      // keep the current row near the top of the visible area
       const parent = tabEl;
       const offset = cur.offsetTop - parent.offsetTop - 60;
       parent.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
     }
-    // cue the upcoming pads on the pad UI
     const hits = expanded.rows[idx];
     cuePads(hits.map((h) => h.pad));
-    // flash the pads visually for the guide
     if ($('guideOn').checked) {
       hits.forEach((h) => flashPad(h.pad, 80));
     }
@@ -158,7 +159,6 @@
     const lookahead = Drums.now() + SCHEDULE_AHEAD;
     while (nextStepTime < lookahead) {
       scheduleAtStep(nextStepTime, stepIdx);
-      // advance
       stepIdx = (stepIdx + 1) % expanded.steps;
       nextStepTime += stepDuration();
     }
@@ -185,8 +185,32 @@
     cuePads([]);
   }
 
+  // Re-align the loop to the user's tap (downbeat = step 0)
+  function syncDownbeat() {
+    if (!expanded) return;
+    Drums.resume();
+    if (!isPlaying) {
+      // start the loop on this tap
+      isPlaying = true;
+      $('playBtn').textContent = '❚❚ PAUSE';
+      stepIdx = 0;
+      nextStepTime = Drums.now() + 0.005;
+      scheduleTimer = setInterval(scheduler, TICK_MS);
+    } else {
+      // realign — next step is step 0
+      stepIdx = 0;
+      nextStepTime = Drums.now() + 0.005;
+    }
+    flashSync();
+  }
+  function flashSync() {
+    const b = $('syncBtn');
+    b.classList.add('hit');
+    setTimeout(() => b.classList.remove('hit'), 120);
+  }
+
   function countIn() {
-    const dur = stepDuration() * (expanded.steps / 4); // one beat
+    const dur = stepDuration() * (expanded.steps / 4);
     const start = Drums.now() + 0.05;
     for (let i = 0; i < 4; i++) {
       Drums.play(i === 0 ? 'clickAccent' : 'click', start + i * dur);
@@ -194,19 +218,81 @@
     return 4 * dur + 0.05;
   }
 
+  // ---------- YouTube ----------
+  let ytPlayer = null;
+  let ytReady = false;
+  let pendingVideoId = null;
+
+  window.onYouTubeIframeAPIReady = () => {
+    ytPlayer = new YT.Player('ytPlayer', {
+      width: '100%', height: '100%',
+      videoId: '',
+      playerVars: { playsinline: 1, modestbranding: 1, rel: 0 },
+      events: {
+        onReady: () => {
+          ytReady = true;
+          if (pendingVideoId) loadYouTube(pendingVideoId, false);
+        },
+        onStateChange: (e) => {
+          // 1 = playing — when YouTube starts, mute the synth guide automatically
+          if (e.data === YT.PlayerState.PLAYING) {
+            $('guideOn').checked = false;
+          }
+        },
+      },
+    });
+  };
+
+  function parseVideoId(input) {
+    if (!input) return '';
+    const s = input.trim();
+    // raw 11-char ID
+    if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+    // youtu.be/<id>
+    let m = s.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (m) return m[1];
+    // youtube.com/watch?v=<id>
+    m = s.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if (m) return m[1];
+    // youtube.com/embed/<id>
+    m = s.match(/embed\/([a-zA-Z0-9_-]{11})/);
+    if (m) return m[1];
+    // youtube.com/shorts/<id>
+    m = s.match(/shorts\/([a-zA-Z0-9_-]{11})/);
+    if (m) return m[1];
+    return '';
+  }
+
+  function loadYouTube(input, persist = true) {
+    const id = parseVideoId(input);
+    if (!id) {
+      // empty / bad — clear player
+      if (ytReady && ytPlayer) ytPlayer.stopVideo && ytPlayer.stopVideo();
+      return;
+    }
+    if (!ytReady) { pendingVideoId = id; return; }
+    ytPlayer.cueVideoById(id);
+    if (persist && currentSong) {
+      localStorage.setItem('drumpad:yt:' + currentSong.id, id);
+    }
+  }
+
+  $('ytLoad').addEventListener('click', () => loadYouTube($('ytInput').value, true));
+  $('ytInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); loadYouTube($('ytInput').value, true); }
+  });
+  $('syncBtn').addEventListener('click', syncDownbeat);
+
   // ---------- Mode buttons ----------
-  let mode = 'play';
   $('modePlay').addEventListener('click', () => setMode('play'));
   $('modeLearn').addEventListener('click', () => setMode('learn'));
   function setMode(m) {
-    mode = m;
     $('modePlay').classList.toggle('active', m === 'play');
     $('modeLearn').classList.toggle('active', m === 'learn');
     if (m === 'learn') {
       $('guideOn').checked = true;
       $('metroOn').checked = true;
     } else {
-      // Free play — assume djay is providing the audio, just pad
       $('guideOn').checked = false;
       $('metroOn').checked = false;
       stop();
@@ -216,8 +302,6 @@
   // ---------- Transport ----------
   $('playBtn').addEventListener('click', () => isPlaying ? stop() : play());
   $('stopBtn').addEventListener('click', stop);
-  $('bpm').addEventListener('change', () => { /* picked up next step */ });
-  $('speed').addEventListener('change', () => { /* picked up next step */ });
 
   // ---------- Keyboard ----------
   window.addEventListener('keydown', (e) => {
@@ -226,9 +310,9 @@
     const n = parseInt(e.key, 10);
     if (n >= 1 && n <= 8) { hitPad(n); return; }
     if (e.code === 'Space') { e.preventDefault(); isPlaying ? stop() : play(); }
+    if (e.key === 't' || e.key === 'T') { e.preventDefault(); syncDownbeat(); }
   });
 
-  // Touch — prevent zoom on double-tap pad
   document.addEventListener('gesturestart', (e) => e.preventDefault());
 
   // ---------- Init ----------

@@ -163,6 +163,34 @@ html, body {
   margin: 0; font-size: 1rem; letter-spacing: 0.5px;
 }
 .songhead .sub { color: var(--dim); font-size: 0.75rem; margin-top: 2px; }
+.ytbox {
+  margin-top: 0.55rem;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.4rem;
+}
+#ytPlayer {
+  width: 100%; aspect-ratio: 16 / 9;
+  background: #000; border-radius: 6px; overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+#ytPlayer iframe { width: 100%; height: 100%; border: 0; display: block; }
+.ytcontrols { display: flex; gap: 4px; margin-bottom: 0.4rem; }
+.ytcontrols #ytInput {
+  flex: 1; min-width: 0;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: 0.4rem 0.5rem; font-family: inherit; font-size: 0.75rem;
+}
+.seg.link {
+  display: inline-flex; align-items: center;
+  text-decoration: none;
+}
+.syncrow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.syncrow .big { padding: 0.45rem 0.7rem; font-size: 0.78rem; }
+.syncrow .hint { color: var(--dim); font-size: 0.65rem; flex: 1; min-width: 120px; }
+
 .songhead .kit {
   margin-top: 0.45rem; font-size: 0.72rem;
   background: var(--panel-2); padding: 0.35rem 0.5rem;
