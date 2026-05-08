@@ -7,6 +7,8 @@
 
   let currentSong = null;
   let expanded = null;
+  let currentSections = [];
+  let currentSectionIdx = 0;
 
   // ---------- Pad UI ----------
   const padCells = {}; // padNum -> element
@@ -59,11 +61,11 @@
     const s = SONGS.find((x) => x.id === id);
     if (!s) return;
     currentSong = s;
-    expanded = expandPattern(s);
+    currentSections = getSections(s);
+    currentSectionIdx = 0;
     $('songTitle').textContent = `${s.id} · ${s.title}`;
     $('songArtist').textContent = s.artist;
     $('kitInfo').textContent = `Suggested kit: ${s.kit}`;
-    $('songNotes').textContent = s.notes || '';
     const cust = $('customList');
     cust.innerHTML = '';
     s.customs.forEach((line) => {
@@ -72,7 +74,8 @@
       cust.appendChild(li);
     });
     $('bpm').value = s.bpm;
-    buildTab();
+    buildSectionChips();
+    selectSection(0, /*seekYT=*/false);
     stop();
 
     // YouTube: load saved or default video for this song
@@ -83,6 +86,51 @@
     // SEARCH link
     const q = encodeURIComponent(`${s.artist} ${s.title} official audio`);
     $('ytSearch').href = `https://www.youtube.com/results?search_query=${q}`;
+  }
+
+  // ---------- Sections ----------
+  function buildSectionChips() {
+    const host = $('sections');
+    host.innerHTML = '';
+    if (currentSections.length <= 1) return; // hide for single-loop songs
+    currentSections.forEach((sec, i) => {
+      const b = document.createElement('button');
+      b.className = 'sec-chip';
+      b.dataset.idx = i;
+      b.innerHTML = `<span>${sec.name}</span><span class="b">${sec.bars}b</span>`;
+      b.addEventListener('click', () => selectSection(i, /*seekYT=*/true));
+      host.appendChild(b);
+    });
+  }
+
+  function selectSection(idx, seekYT) {
+    if (!currentSections[idx]) return;
+    currentSectionIdx = idx;
+    const sec = currentSections[idx];
+    expanded = expandStepPattern(sec);
+    $('songNotes').textContent = sec.notes || currentSong.notes || '';
+    // refresh chip highlight
+    Array.from($('sections').children).forEach((c, i) =>
+      c.classList.toggle('active', i === idx));
+    buildTab();
+    // restart loop on new section
+    if (isPlaying) {
+      stepIdx = 0;
+      nextStepTime = Drums.now() + 0.005;
+    }
+    // seek YouTube to section start (only if user picked a chip)
+    if (seekYT && ytReady && ytPlayer && typeof sec.startMs === 'number') {
+      try { ytPlayer.seekTo(sec.startMs / 1000, true); } catch (_) {}
+    }
+  }
+
+  // Find which section contains a given playback time (ms).
+  function sectionForTimeMs(ms) {
+    for (let i = currentSections.length - 1; i >= 0; i--) {
+      const s = currentSections[i];
+      if (typeof s.startMs === 'number' && ms >= s.startMs) return i;
+    }
+    return 0;
   }
 
   // ---------- Tab (vertical scrolling) ----------
@@ -282,6 +330,19 @@
     if (e.key === 'Enter') { e.preventDefault(); loadYouTube($('ytInput').value, true); }
   });
   $('syncBtn').addEventListener('click', syncDownbeat);
+
+  // Auto-follow: when YT is playing, switch the loop's section to the one
+  // containing the current playback time.
+  setInterval(() => {
+    if (!$('autoFollow').checked) return;
+    if (!ytReady || !ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+    if (currentSections.length <= 1) return;
+    let t;
+    try { t = ytPlayer.getCurrentTime(); } catch (_) { return; }
+    const ms = t * 1000;
+    const idx = sectionForTimeMs(ms);
+    if (idx !== currentSectionIdx) selectSection(idx, /*seekYT=*/false);
+  }, 500);
 
   // ---------- Mode buttons ----------
   $('modePlay').addEventListener('click', () => setMode('play'));

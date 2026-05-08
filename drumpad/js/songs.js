@@ -344,15 +344,98 @@ const SONGS = [
   },
   {
     id: '25', title: 'Sloop John B', artist: 'The Beach Boys',
-    bpm: 105, kit: 'Acoustic Kit', customs: ROCK_CUSTOMS,
-    notes: 'Simple folk-pop beat. Kick on 1 & 3, snare on 2 & 4, ride on 8ths.',
-    pattern: {
-      steps: 16,
-      hat: every(2),
-      kick: on([0, 8]),
-      snare: on([4, 12]),
-      crash: on([0]),
-    },
+    bpm: 124, kit: 'Pet Sounds Kit (Hal Blaine)',
+    customs: [
+      'Closed Hi-Hat (or "clicker"/cricket if available) — slot 1',
+      'Closed Hi-Hat / clicker — slot 2 (alternate hands on 8ths)',
+      'Snare — low-tuned, Blaine signature — slot 3',
+      'Kick — deep, woolly thud — slot 4',
+      'Kick — same as slot 4 — slot 5',
+      'Snare — low-tuned — slot 6',
+      'TAMBOURINE — shaken 16ths (replaces snare-roll for this song) — slot 7',
+      'Hi-Hat (closed) — for verse 3 build / accent — slot 8',
+    ],
+    notes: 'Three percussionists in the original (Hal Blaine kit + Steve Douglas clicker/tambourine + Frank Capp glock). 8 distinct sections — pick a chip below to drill that section. Clicker on slot 1/2 is the timekeeper; never stops except in the glock break.',
+    sections: [
+      {
+        id: 'intro', name: 'Intro', bars: 2, startMs: 0,
+        steps: 8,
+        hat: [1,1,1,1,1,1,1,1],
+        kick: [], snare: [], roll: [], crash: [],
+        notes: 'Cricket clicker eighths only. Flutes + glock above.',
+      },
+      {
+        id: 'verse1', name: 'Verse 1', bars: 16, startMs: 3871,
+        steps: 8,
+        hat: [1,1,1,1,1,1,1,1],
+        kick: [], snare: [], roll: [], crash: [],
+        notes: 'Drums silent except ONE explosive kick+snare hit on beat 1 of bar 6 of this section. Clicker holds time. Glock enters bar 9.',
+      },
+      {
+        id: 'chorus1', name: 'Chorus 1 (march)', bars: 16, startMs: 34839,
+        steps: 8,
+        hat: [1,1,1,1,1,1,1,1],
+        kick: on([0], 8),                    // beat 1 only
+        snare: on([0], 8),                   // simultaneous w/ kick
+        roll: [], crash: [],
+        notes: 'MARCH FEEL. Kick + snare TOGETHER on beat 1 of every bar. No backbeat.',
+      },
+      {
+        id: 'verse2', name: 'Verse 2 (backbeat)', bars: 16, startMs: 65806,
+        steps: 16,
+        hat: on([0,2,4,6,8,10,12,14]),       // clicker eighths
+        kick: on([0, 8]),                    // beats 1 and 3
+        snare: on([4, 12]),                  // backbeat 2 and 4
+        roll: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], // tambourine 16ths
+        crash: [],
+        notes: 'Standard rock backbeat enters. Tamb shakes 16ths (slot 7). Spliced from take 9.',
+      },
+      {
+        id: 'chorus2', name: 'Chorus 2 (full power)', bars: 16, startMs: 96774,
+        steps: 16,
+        hat: on([0,2,4,6,8,10,12,14]),
+        kick: on([0,2,4,6,8,10,12,14]),      // EIGHTH-NOTE KICK STOMPING
+        snare: on([4, 12]),
+        roll: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+        crash: [],
+        notes: 'EIGHTH-NOTE KICK STOMPING + backbeat snare + tamb 16ths. Mid-section: 4-bar A CAPPELLA BREAK — drop everything, voices only, then come back in.',
+      },
+      {
+        id: 'v3-drop', name: 'V3 Breakdown', bars: 8, startMs: 127742,
+        steps: 8,
+        hat: [1,1,1,1,1,1,1,1],
+        kick: [], snare: [], roll: [], crash: [],
+        notes: 'DRAMATIC DROP. Only basses + guitars + piano + clicker. Drums OUT.',
+      },
+      {
+        id: 'v3-build', name: 'V3 Build (hi-hat 8ths)', bars: 4, startMs: 143226,
+        steps: 8,
+        hat: [1,1,1,1,1,1,1,1],
+        kick: [], snare: [], roll: [],
+        crash: [1,1,1,1,1,1,1,1],            // hi-hat (slot 8) eighths
+        notes: 'Hi-hat (slot 8) eighths build tension. Then it explodes into double time (next chip).',
+      },
+      {
+        id: 'v3-double', name: 'V3 Double Time', bars: 2, startMs: 150968,
+        steps: 16,
+        hat: on([0,2,4,6,8,10,12,14]),
+        kick: on([0,2,4,6,8,10,12,14]),
+        snare: on([4, 12]),
+        roll: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+        crash: on([0,2,4,6,8,10,12,14]),
+        notes: 'EXPLOSION — full kit + bass sax + glock. Then 2-bar break (glock descending scale, drums out) before chorus 3.',
+      },
+      {
+        id: 'chorus3', name: 'Chorus 3 (fade)', bars: 16, startMs: 158710,
+        steps: 16,
+        hat: on([0,2,4,6,8,10,12,14]),
+        kick: on([0,2,4,6,8,10,12,14]),
+        snare: on([4, 12]),
+        roll: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+        crash: [],
+        notes: 'Same as Chorus 2. Song fades out ~bar 8 in.',
+      },
+    ],
   },
   {
     id: '26', title: 'Excuse Me', artist: 'A$AP Rocky',
@@ -442,13 +525,12 @@ const SONGS = [
   },
 ];
 
-// Expand a song's voice-pattern into a flat per-step list of pad slots,
-// auto-alternating between left/right pads of paired voices.
-function expandPattern(song) {
-  const p = song.pattern;
+// Expand a step pattern (object with hat/kick/snare/roll/crash arrays + steps)
+// into a flat per-step list of pad slots, auto-alternating between left/right
+// pads of paired voices for ergonomic playing.
+function expandStepPattern(p) {
   const steps = p.steps || 16;
   const out = [];
-  // counters to alternate pad pairs
   const ctr = { hat: 0, kick: 0, snare: 0, crash: 0, roll: 0 };
   for (let s = 0; s < steps; s++) {
     const hits = [];
@@ -464,6 +546,33 @@ function expandPattern(song) {
     out.push(hits);
   }
   return { steps, swing: p.swing || 0, rows: out };
+}
+
+// Returns a list of sections for any song.
+// - For multi-section songs, returns the sections array as-is (each is a step pattern).
+// - For legacy single-pattern songs, wraps the pattern in a single "Loop" section.
+function getSections(song) {
+  if (song.sections && song.sections.length) return song.sections;
+  return [{
+    id: 'loop', name: 'Loop',
+    bars: 1,
+    startMs: 0,
+    steps: song.pattern.steps,
+    swing: song.pattern.swing || 0,
+    hat: song.pattern.hat || [],
+    kick: song.pattern.kick || [],
+    snare: song.pattern.snare || [],
+    roll: song.pattern.roll || [],
+    crash: song.pattern.crash || [],
+    notes: song.notes || '',
+  }];
+}
+
+// Backwards-compat: existing callers used expandPattern(song); preserve that
+// by expanding the FIRST section.
+function expandPattern(song) {
+  const sections = getSections(song);
+  return expandStepPattern(sections[0]);
 }
 
 // Pad metadata used by the UI

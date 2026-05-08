@@ -190,6 +190,27 @@ html, body {
 .syncrow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .syncrow .big { padding: 0.45rem 0.7rem; font-size: 0.78rem; }
 .syncrow .hint { color: var(--dim); font-size: 0.65rem; flex: 1; min-width: 120px; }
+.syncrow .big.hit { background: #fff; }
+
+.sections {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 0.5rem;
+}
+.sections:empty { display: none; }
+.sec-chip {
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: 0.32rem 0.55rem; font-size: 0.7rem;
+  font-family: inherit; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.sec-chip .b { color: var(--dim); font-size: 0.6rem; }
+.sec-chip:hover { border-color: var(--accent); }
+.sec-chip.active {
+  background: var(--accent); color: var(--bg);
+  border-color: var(--accent); font-weight: 700;
+}
+.sec-chip.active .b { color: rgba(0,0,0,0.5); }
 
 .songhead .kit {
   margin-top: 0.45rem; font-size: 0.72rem;
