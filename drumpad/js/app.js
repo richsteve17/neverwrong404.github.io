@@ -9,6 +9,8 @@
   let expanded = null;
   let currentSections = [];
   let currentSectionIdx = 0;
+  // voice mute state — true = ON (play it), false = muted
+  const voiceOn = { hat: true, kick: true, snare: true, roll: true, crash: true };
 
   // ---------- Pad UI ----------
   const padCells = {}; // padNum -> element
@@ -109,19 +111,36 @@
     const sec = currentSections[idx];
     expanded = expandStepPattern(sec);
     $('songNotes').textContent = sec.notes || currentSong.notes || '';
-    // refresh chip highlight
     Array.from($('sections').children).forEach((c, i) =>
       c.classList.toggle('active', i === idx));
+    autoMuteForSection(sec);
     buildTab();
-    // restart loop on new section
     if (isPlaying) {
       stepIdx = 0;
       nextStepTime = Drums.now() + 0.005;
     }
-    // seek YouTube to section start (only if user picked a chip)
     if (seekYT && ytReady && ytPlayer && typeof sec.startMs === 'number') {
       try { ytPlayer.seekTo(sec.startMs / 1000, true); } catch (_) {}
     }
+  }
+
+  // If a section has unplayable density on a voice (e.g. 16th-note tambourine
+  // = 8 hits/sec at 124 BPM), default-mute that voice. The user can re-enable it.
+  function autoMuteForSection(sec) {
+    const stepsPerBeat = sec.steps / 4;
+    const countHits = (arr) => (arr || []).filter(Boolean).length;
+    // tambourine / roll: if it hits >50% of all 16th-note steps, mute it
+    if (sec.steps >= 16 && countHits(sec.roll) > sec.steps * 0.5) {
+      voiceOn.roll = false;
+    } else if (countHits(sec.roll) > 0) {
+      voiceOn.roll = true;
+    }
+    // hat: if it hits every step (16ths), mute by default
+    if (sec.steps >= 16 && countHits(sec.hat) >= sec.steps) {
+      voiceOn.hat = false;
+    }
+    // crash: keep on by default
+    refreshVoiceToggles();
   }
 
   // Find which section contains a given playback time (ms).
@@ -147,9 +166,10 @@
       const li = document.createElement('li');
       if (i % stepsPerBeat === 0) li.classList.add('beat1');
       const stepLabel = sub === 0 ? `${beat}` : `${beat}${subLabel}`;
-      const chips = hits.map((h) => {
-        return `<span class="chip ${VOICE_CLASS[h.voice]}">${h.pad}·${h.voice.toUpperCase()}</span>`;
-      }).join('');
+      const chips = hits
+        .filter((h) => voiceOn[h.voice])
+        .map((h) => `<span class="chip ${VOICE_CLASS[h.voice]}">${h.pad}</span>`)
+        .join('');
       li.innerHTML = `<span class="step">${stepLabel}</span><span class="bar">bar 1</span><span class="hits">${chips || '·'}</span>`;
       tabEl.appendChild(li);
       tabRows.push(li);
@@ -180,7 +200,7 @@
       }
     }
     if ($('guideOn').checked && hits.length) {
-      hits.forEach((h) => Drums.play(PAD_VOICE[h.pad], time));
+      hits.forEach((h) => { if (voiceOn[h.voice]) Drums.play(PAD_VOICE[h.pad], time); });
     }
     const ctxNow = Drums.now();
     const delayMs = Math.max(0, (time - ctxNow) * 1000);
@@ -196,7 +216,7 @@
       const offset = cur.offsetTop - parent.offsetTop - 60;
       parent.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
     }
-    const hits = expanded.rows[idx];
+    const hits = expanded.rows[idx].filter((h) => voiceOn[h.voice]);
     cuePads(hits.map((h) => h.pad));
     if ($('guideOn').checked) {
       hits.forEach((h) => flashPad(h.pad, 80));
@@ -330,6 +350,25 @@
     if (e.key === 'Enter') { e.preventDefault(); loadYouTube($('ytInput').value, true); }
   });
   $('syncBtn').addEventListener('click', syncDownbeat);
+
+  // ---------- Voice mute toggles ----------
+  function refreshVoiceToggles() {
+    document.querySelectorAll('#voiceToggles .vt').forEach((b) => {
+      const v = b.dataset.voice;
+      const on = !!voiceOn[v];
+      b.classList.toggle('on', on);
+      b.classList.toggle('off', !on);
+    });
+  }
+  document.querySelectorAll('#voiceToggles .vt').forEach((b) => {
+    b.addEventListener('click', () => {
+      const v = b.dataset.voice;
+      voiceOn[v] = !voiceOn[v];
+      refreshVoiceToggles();
+      buildTab();
+    });
+  });
+  refreshVoiceToggles();
 
   // Auto-follow: when YT is playing, switch the loop's section to the one
   // containing the current playback time.
